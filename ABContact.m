@@ -67,6 +67,7 @@
 	ABRecordRef contactrec = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
 	ABContact *contact = [self contactWithRecord:contactrec];
 	// CFRelease(contactrec); // Thanks Gary Fung
+    CFRelease(addressBook);
 	return contact;
 }
 
@@ -366,9 +367,11 @@
 	NSMutableArray *labels = [NSMutableArray array];
 	for (int i = 0; i < ABMultiValueGetCount(theProperty); i++)
 	{
-		NSString *label = (NSString *)ABAddressBookCopyLocalizedLabel(ABMultiValueCopyLabelAtIndex(theProperty, i));
-		[labels addObject:label];
-		[label release];
+        CFStringRef valueLabel = ABMultiValueCopyLabelAtIndex(theProperty, i);
+		NSString *localizedLabel = (NSString *)ABAddressBookCopyLocalizedLabel(valueLabel);
+		[labels addObject:localizedLabel];
+        CFRelease(valueLabel);
+		[localizedLabel release];
 	}
 	CFRelease(theProperty);
 	return labels;
