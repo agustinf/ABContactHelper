@@ -32,9 +32,7 @@
 {
 	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreate());
 	ABRecordRef grouprec = ABAddressBookGetGroupWithRecordID(addressBook, recordID);
-	ABGroup *group = [self groupWithRecord:grouprec];
-	CFRelease(grouprec);
-	return group;
+	return [self groupWithRecord:grouprec];
 }
 
 // Thanks to Ciaran
