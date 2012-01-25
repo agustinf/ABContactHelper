@@ -36,6 +36,7 @@
 + (NSArray *) contactsMatchingName: (NSString *) fname;
 + (NSArray *) contactsMatchingName: (NSString *) fname andName: (NSString *) lname;
 + (NSArray *) contactsMatchingPhone: (NSString *) number;
++ (NSArray *) contactsMatchingEmail: (NSString *) email;
 
 // Find groups
 + (NSArray *) groupsMatchingName: (NSString *) fname;

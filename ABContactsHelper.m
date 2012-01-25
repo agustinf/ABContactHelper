@@ -125,6 +125,14 @@
 	return [contacts filteredArrayUsingPredicate:pred];
 }
 
++ (NSArray *) contactsMatchingEmail: (NSString *) email 
+{
+	NSPredicate *pred;
+	NSArray *contacts = [ABContactsHelper contacts];
+	pred = [NSPredicate predicateWithFormat:@"emailaddresses contains[cd] %@", email];
+	return [contacts filteredArrayUsingPredicate:pred];
+}
+
 + (NSArray *) groupsMatchingName: (NSString *) fname
 {
 	NSPredicate *pred;
