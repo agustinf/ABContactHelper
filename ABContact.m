@@ -324,7 +324,8 @@
 			[string appendFormat:@" "];
 	}
 
-	if (self.organization) [string appendFormat:@"(%@)", self.organization];
+	if (self.organization && [string length] > 0) [string appendFormat:@"(%@)", self.organization];
+  if (self.organization) [string appendString:self.organization];
 	return [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
