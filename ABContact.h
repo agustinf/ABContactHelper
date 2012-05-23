@@ -58,6 +58,7 @@
 @property (nonatomic, assign) NSString *note;
 
 @property (nonatomic, readonly) NSString *contactName; // my friendly utility
+@property (nonatomic, readonly) NSString *fullName;
 @property (nonatomic, readonly) NSString *compositeName; // via AB
 
 #pragma mark NUMBER
@@ -110,6 +111,8 @@
 // Conversion to data
 - (NSData *) baseDataRepresentation; // no image
 - (NSData *) dataRepresentation; // image where available
+
+- (NSComparisonResult) compareByName:(ABContact*) anotherContact;
 
 + (id) contactWithDictionary: (NSDictionary *) dict;
 + (id) contactWithData: (NSData *) data;

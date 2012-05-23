@@ -133,6 +133,14 @@
 	return [contacts filteredArrayUsingPredicate:pred];
 }
 
++ (NSArray *) contactsMatchingEmailOrName: (NSString *) match 
+{
+  NSPredicate *pred;
+	NSArray *contacts = [ABContactsHelper contacts];
+	pred = [NSPredicate predicateWithFormat:@"firstname contains[cd] %@ OR lastname contains[cd] %@ OR nickname contains[cd] %@ OR middlename contains[cd] %@ OR emailaddresses contains[cd] %@", match, match, match, match, match];
+	return [contacts filteredArrayUsingPredicate:pred];
+}
+
 + (NSArray *) groupsMatchingName: (NSString *) fname
 {
 	NSPredicate *pred;
