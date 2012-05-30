@@ -314,7 +314,6 @@
 	{
 		if (self.prefix) [string appendFormat:@"%@ ", self.prefix];
 		if (self.firstname) [string appendFormat:@"%@ ", self.firstname];
-		if (self.nickname) [string appendFormat:@"\"%@\" ", self.nickname];
 		if (self.lastname) [string appendFormat:@"%@", self.lastname];
     
 		if (self.suffix && string.length)
