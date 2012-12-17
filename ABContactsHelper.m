@@ -14,12 +14,40 @@
  */
 + (ABAddressBookRef) addressBook
 {
-	return CFAutorelease(ABAddressBookCreate());
+    ABAddressBookRef ab = NULL;
+    // ABAddressBookCreateWithOptions is iOS 6 and up.
+    if (&ABAddressBookCreateWithOptions) {
+        NSError *error = nil;
+        ab = ABAddressBookCreateWithOptions(NULL, (CFErrorRef *)&error);
+    }
+    if (ab == NULL) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        ab = ABAddressBookCreate();
+#pragma clang diagnostic pop
+    }
+    
+    __block BOOL accessGranted = NO;
+    if (ABAddressBookRequestAccessWithCompletion != NULL) { // we're on iOS 6
+        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+        
+        ABAddressBookRequestAccessWithCompletion(ab, ^(bool granted, CFErrorRef error) {
+            accessGranted = granted;
+            dispatch_semaphore_signal(sema);
+        });
+        
+        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+        dispatch_release(sema);    
+    }
+    else {
+        accessGranted = YES;
+    }
+	return CFAutorelease(ab);
 }
 
 + (NSArray *) contacts
 {
-	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreate());
+	ABAddressBookRef addressBook = [ABContactsHelper addressBook];
 	NSArray *thePeople = (NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
 	NSMutableArray *array = [NSMutableArray arrayWithCapacity:thePeople.count];
 	for (id person in thePeople)
@@ -30,13 +58,13 @@
 
 + (int) contactsCount
 {
-	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreate());
+	ABAddressBookRef addressBook = [ABContactsHelper addressBook];
 	return ABAddressBookGetPersonCount(addressBook);
 }
 
 + (int) contactsWithImageCount
 {
-	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreate());
+	ABAddressBookRef addressBook = [ABContactsHelper addressBook];
 	NSArray *peopleArray = (NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
 	int ncount = 0;
 	for (id person in peopleArray) if (ABPersonHasImageData(person)) ncount++;
@@ -46,7 +74,7 @@
 
 + (int) contactsWithoutImageCount
 {
-	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreate());
+	ABAddressBookRef addressBook = [ABContactsHelper addressBook];
 	NSArray *peopleArray = (NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
 	int ncount = 0;
 	for (id person in peopleArray) if (!ABPersonHasImageData(person)) ncount++;
@@ -57,7 +85,7 @@
 // Groups
 + (int) numberOfGroups
 {
-	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreate());
+	ABAddressBookRef addressBook = [ABContactsHelper addressBook];
 	NSArray *groups = (NSArray *)ABAddressBookCopyArrayOfAllGroups(addressBook);
 	int ncount = groups.count;
 	[groups release];
@@ -66,7 +94,7 @@
 
 + (NSArray *) groups
 {
-	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreate());
+	ABAddressBookRef addressBook = [ABContactsHelper addressBook];
 	NSArray *groups = (NSArray *)ABAddressBookCopyArrayOfAllGroups(addressBook);
 	NSMutableArray *array = [NSMutableArray arrayWithCapacity:groups.count];
 	for (id group in groups)
@@ -86,14 +114,14 @@
 // Thanks to Eridius for suggestions re: error
 + (BOOL) addContact: (ABContact *) aContact withError: (NSError **) error
 {
-	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreate());
+	ABAddressBookRef addressBook = [ABContactsHelper addressBook];
 	if (!ABAddressBookAddRecord(addressBook, aContact.record, (CFErrorRef *) error)) return NO;
 	return ABAddressBookSave(addressBook, (CFErrorRef *) error);
 }
 
 + (BOOL) addGroup: (ABGroup *) aGroup withError: (NSError **) error
 {
-	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreate());
+	ABAddressBookRef addressBook = [ABContactsHelper addressBook];
 	if (!ABAddressBookAddRecord(addressBook, aGroup.record, (CFErrorRef *) error)) return NO;
 	return ABAddressBookSave(addressBook, (CFErrorRef *) error);
 }
