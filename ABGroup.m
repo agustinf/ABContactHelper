@@ -30,7 +30,7 @@
 
 + (id) groupWithRecordID: (ABRecordID) recordID
 {
-	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreate());
+	ABAddressBookRef addressBook = [ABContactsHelper addressBook];
 	ABRecordRef grouprec = ABAddressBookGetGroupWithRecordID(addressBook, recordID);
 	return [self groupWithRecord:grouprec];
 }
@@ -52,7 +52,7 @@
 
 - (BOOL) removeSelfFromAddressBook: (NSError **) error
 {
-	ABAddressBookRef addressBook = CFAutorelease(ABAddressBookCreate());
+	ABAddressBookRef addressBook = [ABContactsHelper addressBook];
 	if (!ABAddressBookRemoveRecord(addressBook, self.record, (CFErrorRef *) error)) return NO;
 	return ABAddressBookSave(addressBook,  (CFErrorRef *) error);
 }
